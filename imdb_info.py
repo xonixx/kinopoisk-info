@@ -14,7 +14,6 @@ import urllib
 import re
 
 
-IMDB, KINOPOISK = 'imdb', 'kinopoisk'
 TRASH = [
 	'ru','rus','en','eng',
 	'dvdrip', 'tvrip']
@@ -32,34 +31,46 @@ def main(args):
 	path = args[0];
 	print path
 	
-	do_search(path, IMDB)
+	do_search(path)
 	
 	input()
 
-def do_search(path, site):
+def do_search(path):
 	q = make_search_string(path)
 	url, url0 = search_google(q)
 	
 	if url==None: # try without russian
-		print '!!! try without russian'
+		print '\n!!! try without russian'
 		
-		q = clean_russian(q)
+		qe = clean_russian(q)
 		
-		print 'q:',q
+		print 'qe:',qe
 		
-		if q != None:
-			url, url1 = search_google(q)
+		if qe != None:
+			url, url1 = search_google(qe)
 			if url0 == None:
 				url0 = url1
-	
+
+	if url==None: # try only russian
+		print '\n!!! try russian'
+		
+		qr = clean_eng(q)
+		
+		print 'qr:',qr
+		
+		if qr != None:
+			url, url1 = search_google(qr)
+			if url0 == None:
+				url0 = url1
+
 	if url==None:
-		url = url0
+		url = url0 # if not found - return most relevant
 	
 	print 'URL:', url
 	return url
 
 def search_google(q):
-	query = urllib.urlencode({'q' : q.decode('cp1251').encode("utf-8")})
+	query = urllib.urlencode({'q' : q.decode('cp1251').encode('utf-8')})
 	url = u'http://ajax.googleapis.com/ajax/services/search/web?v=1.0&rsz=8&%s'.encode("utf-8") \
 		% (query)
 		
@@ -112,9 +123,17 @@ def clean_russian(q):
 	m = re.match(r'.+(\[.+?\]).+',q)
 	
 	if m != None:
-		q = q[:m.start(1)] + ' '+q[m.end(1):]
+		return q[:m.start(1)] + ' '+q[m.end(1):]
 	
-	return q	
+	return None	
+
+def clean_eng(q):
+	m = re.match(r'.+(\[.+?\]).+',q)
+	
+	if m != None:
+		return q[m.start(1):]
+	
+	return None	
 	
 
 if __name__=='__main__':
