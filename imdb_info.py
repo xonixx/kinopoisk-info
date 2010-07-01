@@ -13,6 +13,8 @@ import simplejson
 import urllib
 import re
 
+#SITES = ['imdb.com/title/tt','kinopoisk.ru/level']
+SITES = ['kinopoisk.ru/level','imdb.com/title/tt']
 
 TRASH = [
 	'ru','rus','en','eng',
@@ -71,19 +73,24 @@ def do_search(path):
 
 def search_google(q):
 	query = urllib.urlencode({'q' : q.decode('cp1251').encode('utf-8')})
-	url = u'http://ajax.googleapis.com/ajax/services/search/web?v=1.0&rsz=8&%s'.encode("utf-8") \
+	g_url = u'http://ajax.googleapis.com/ajax/services/search/web?v=1.0&rsz=8&%s'.encode("utf-8") \
 		% (query)
 		
-	search_results = urllib.urlopen(url)
+	search_results = urllib.urlopen(g_url)
 	json = simplejson.loads(search_results.read())
 	results = json['responseData']['results']
 
 	for res in results:
 		print 'url:', res['url']
 		
-	url = search_for_site(results, 'imdb.com/title/tt')
-	if url == None:
-		url = search_for_site(results, 'kinopoisk.ru/level')
+	url = None
+	
+	for site in SITES:
+		print '\n>> Checking site:', site
+		
+		url = search_for_site(results, site)
+		if url != None:
+			break
 		
 	if len(results) > 0:
 		url0 = results[0]['url'] # most relevant
