@@ -13,6 +13,12 @@ import simplejson
 import urllib
 import re
 
+import webbrowser
+
+NEW_BROWSER_WINDOW = 0
+#NEW_BROWSER_WINDOW = 1
+#NEW_BROWSER_WINDOW = 2
+
 #SITES = ['imdb.com/title/tt','kinopoisk.ru/level']
 SITES = ['kinopoisk.ru/level','imdb.com/title/tt']
 
@@ -33,9 +39,12 @@ def main(args):
 	path = args[0];
 	print path
 	
-	do_search(path)
+	url = do_search(path)
 	
-	input()
+	webbrowser.open(url, new=NEW_BROWSER_WINDOW)
+	#webbrowser.open_new_tab(url)
+	
+	#input()
 
 def do_search(path):
 	q = make_search_string(path)
