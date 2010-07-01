@@ -38,8 +38,25 @@ def main(args):
 
 def do_search(path, site):
 	q = make_search_string(path)
-	site_url = search_google(q)
-	print 'URL:', site_url
+	url, url0 = search_google(q)
+	
+	if url==None: # try without russian
+		print '!!! try without russian'
+		
+		q = clean_russian(q)
+		
+		print 'q:',q
+		
+		if q != None:
+			url, url1 = search_google(q)
+			if url0 == None:
+				url0 = url1
+	
+	if url==None:
+		url = url0
+	
+	print 'URL:', url
+	return url
 
 def search_google(q):
 	query = urllib.urlencode({'q' : q.decode('cp1251').encode("utf-8")})
@@ -57,7 +74,12 @@ def search_google(q):
 	if url == None:
 		url = search_for_site(results, 'kinopoisk.ru/level')
 		
-	return url
+	if len(results) > 0:
+		url0 = results[0]['url'] # most relevant
+	else:
+		url0 = None
+		
+	return url, url0
 	
 def search_for_site(rr, site):
 	for r in rr:
@@ -84,7 +106,15 @@ def make_search_string(path):
 def clean(q):
 	trash_re = '|'.join(r'\[%s\]' % t for t in TRASH)
 	q = re.sub('(?i)' + trash_re,'',q)
-	return q
+	return q.strip()
+	
+def clean_russian(q):
+	m = re.match(r'.+(\[.+?\]).+',q)
+	
+	if m != None:
+		q = q[:m.start(1)] + ' '+q[m.end(1):]
+	
+	return q	
 	
 
 if __name__=='__main__':
