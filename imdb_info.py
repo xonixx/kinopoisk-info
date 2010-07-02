@@ -23,8 +23,13 @@ NEW_BROWSER_WINDOW = 0
 SITES = ['kinopoisk.ru/level','imdb.com/title/tt']
 
 TRASH = [
-	'ru','rus','en','eng',
-	'dvdrip', 'tvrip']
+	'ru','rus',
+	'en','eng',
+	'jp','de','fr','it','pl',
+	'es','esp',
+	'dvdrip', 'tvrip', 'hdtv', 'dvd',
+	#'animation'
+	]
 
 def fail(s):
 	print s
