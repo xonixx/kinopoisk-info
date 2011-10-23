@@ -22,6 +22,10 @@ def fail(s):
     print s
     sys.exit(1)
 
+def p(s):
+    print
+    print s
+    print
 
 def main(args):
     #print args
@@ -42,41 +46,64 @@ def main(args):
 
 
 def do_search(path):
-    q = make_search_string(path)
-    url, url0 = search_google(q)
+    to_try_search = [
+        ('by film folder name', make_search_string(path)),
+    ]
 
-    if url is None: # try without russian
-        print '\n!!! try without russian'
+    url, url0 = None, None
 
-        qe = clean_russian(q)
+    for search_name, search_str in to_try_search:
+        p('Searching ' + search_name + " : \n"
+         'q=' + search_str)
 
-        print 'qe:', qe
+        url, url0 = search_google(search_str)
 
-        if qe is not None:
-            url, url1 = search_google(qe)
-            if url0 is None:
-                url0 = url1
-
-    if url is None: # try only russian
-        print '\n!!! try russian'
-
-        qr = clean_eng(q)
-
-        print 'qr:', qr
-
-        if qr is not None:
-            url, url1 = search_google(qr)
-            if url0 is None:
-                url0 = url1
+#    q = make_search_string(path)
+#    url, url0 = search_google(q)
+#
+#    if url is None: # try without russian
+#        print '\n!!! try without russian'
+#
+#        qe = clean_russian(q)
+#
+#        print 'qe:', qe
+#
+#        if qe is not None:
+#            url, url1 = search_google(qe)
+#            if url0 is None:
+#                url0 = url1
+#
+#    if url is None: # try only russian
+#        print '\n!!! try russian'
+#
+#        qr = clean_eng(q)
+#
+#        print 'qr:', qr
+#
+#        if qr is not None:
+#            url, url1 = search_google(qr)
+#            if url0 is None:
+#                url0 = url1
 
     if url is None:
         url = url0 # if not found - return most relevant
 
-    print 'URL:', url
+    print 'Result URL: ' + url
     return url
 
-
 def search_google(q):
+    url, url0 = None, None
+
+    for site in SITES:
+        url, url0 = query_google(q + ' site:' + site)
+        if url is not None:
+            break
+
+    return url, url0
+
+def query_google(q):
+    p('Querying Google: q=' + q)
+
     query = urllib.urlencode({'q': q.decode('cp1251').encode('utf-8')})
     g_url = u'http://ajax.googleapis.com/ajax/services/search/web?v=1.0&rsz=8&%s'.encode("utf-8")\
     % (query,)

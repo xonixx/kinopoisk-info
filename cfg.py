@@ -7,8 +7,8 @@ NEW_BROWSER_WINDOW = 0
 #NEW_BROWSER_WINDOW = 1
 #NEW_BROWSER_WINDOW = 2
 
-#SITES = ['imdb.com/title/tt','kinopoisk.ru/level']
-SITES = ['kinopoisk.ru/level', 'imdb.com/title/tt']
+#SITES = ['imdb.com/title/tt','kinopoisk.ru/level/1/film']
+SITES = ['kinopoisk.ru/level/1/film', 'imdb.com/title/tt']
 
 TRASH = [
     'ru', 'rus',
