@@ -124,7 +124,7 @@ def query_google(q):
     search_results = urllib.urlopen(g_url)
     google_reply = search_results.read()
 
-    p('Google reply: \n' + google_reply)
+#    p('Google reply: \n' + google_reply)
 
     json = simplejson.loads(google_reply)
     results = json['responseData']['results']
