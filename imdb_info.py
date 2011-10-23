@@ -38,14 +38,19 @@ def main(args):
 
     url = do_search(path)
 
-    webbrowser.open(url, new=NEW_BROWSER_WINDOW)
-    #webbrowser.open_new_tab(url)
+    if url is None:
+#        url='data:text/html,Film not found =(';
+        pass
+    else:
+        webbrowser.open(url, new=NEW_BROWSER_WINDOW)
+        #webbrowser.open_new_tab(url)
 
     if DEBUG:
         input()
 
 
 def do_search(path):
+    # todo: if only not folder
     to_try_search = [
         ('by film file name', make_search_string(path, True)),
         ('by film folder name', make_search_string(path, False)),
@@ -92,17 +97,20 @@ def do_search(path):
     if url is None:
         url = url0 # if not found - return most relevant
 
-    p('Result URL: ' + url)
+    p('Result URL: %s' % url)
 
     return url
 
 def search_google(q):
     url, url0 = None, None
 
-    for site in SITES:
-        url, url0 = query_google(q + ' site:' + site)
-        if url is not None:
-            break
+    if APPEND_SITE:
+        for site in SITES:
+            url, url0 = query_google(q + ' site:' + site)
+            if url is not None:
+                break
+    else:
+        url, url0 = query_google(q)
 
     return url, url0
 
@@ -114,7 +122,11 @@ def query_google(q):
     % (query,)
 
     search_results = urllib.urlopen(g_url)
-    json = simplejson.loads(search_results.read())
+    google_reply = search_results.read()
+
+    p('Google reply: \n' + google_reply)
+
+    json = simplejson.loads(google_reply)
     results = json['responseData']['results']
 
     for res in results:
@@ -169,7 +181,11 @@ def make_search_string(path, need_file_name):
 
 def clean(q):
     trash_re = '|'.join(r'\[%s\]' % t for t in TRASH)
+    trash_re1 = '|'.join(r'\b%s\b' % t for t in TRASH)
+
     q = re.sub('(?i)' + trash_re, '', q)
+    q = re.sub('(?i)' + trash_re1, '', q)
+
     return q.strip()
 
 
