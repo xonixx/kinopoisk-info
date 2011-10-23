@@ -15,6 +15,6 @@ TRASH = [
     'en', 'eng',
     'jp', 'de', 'fr', 'it', 'pl',
     'es', 'esp',
-    'dvdrip', 'tvrip', 'hdtv', 'dvd',
+    'dvdrip', 'tvrip', 'hdtv', 'dvd', 'bdrip',
     #'animation'
 ]

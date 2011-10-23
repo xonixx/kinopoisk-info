@@ -2,7 +2,7 @@ __author__ = 'xonixx@gmail.com'
 
 import sys
 import os
-from os.path import split, join, isfile, isdir
+from os.path import split, join, isfile, splitext
 
 import traceback
 
@@ -47,7 +47,8 @@ def main(args):
 
 def do_search(path):
     to_try_search = [
-        ('by film folder name', make_search_string(path)),
+        ('by film file name', make_search_string(path, True)),
+        ('by film folder name', make_search_string(path, False)),
     ]
 
     url, url0 = None, None
@@ -57,6 +58,9 @@ def do_search(path):
          'q=' + search_str)
 
         url, url0 = search_google(search_str)
+
+        if url is not None:
+            break
 
 #    q = make_search_string(path)
 #    url, url0 = search_google(q)
@@ -88,7 +92,8 @@ def do_search(path):
     if url is None:
         url = url0 # if not found - return most relevant
 
-    print 'Result URL: ' + url
+    p('Result URL: ' + url)
+
     return url
 
 def search_google(q):
@@ -139,20 +144,27 @@ def search_for_site(rr, site):
             return url
 
 
-def make_search_string(path):
-    if isfile(path):
-        dn, fn = split(path)
-        _, dn = split(dn)
-    else: # dir
-        _, dn = split(path)
+def make_search_string(path, need_file_name):
+    n = None
 
-    dn_clean = clean(dn)
+    if not need_file_name:
+        if isfile(path):
+            dn, fn = split(path)
+            _, n = split(dn)
+        else: # dir
+            _, n = split(path)
+    else:
+        n = split(path)[1]
 
-    print dn
-    print 'cleaned:', dn_clean
-    #print fn
+        if isfile(path):
+            n = splitext(n)[0]
 
-    return dn_clean
+    n_clean = clean(n)
+
+    p('Name: ' + n +
+      '\nCleaned: ' + n_clean)
+
+    return n_clean
 
 
 def clean(q):
