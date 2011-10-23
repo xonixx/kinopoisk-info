@@ -55,31 +55,31 @@ def do_search(path):
 	q = make_search_string(path)
 	url, url0 = search_google(q)
 	
-	if url==None: # try without russian
+	if url is None: # try without russian
 		print '\n!!! try without russian'
 		
 		qe = clean_russian(q)
 		
 		print 'qe:',qe
 		
-		if qe != None:
+		if qe is not None:
 			url, url1 = search_google(qe)
-			if url0 == None:
+			if url0 is None:
 				url0 = url1
 
-	if url==None: # try only russian
+	if url is None: # try only russian
 		print '\n!!! try russian'
 		
 		qr = clean_eng(q)
 		
 		print 'qr:',qr
 		
-		if qr != None:
+		if qr is not None:
 			url, url1 = search_google(qr)
-			if url0 == None:
+			if url0 is None:
 				url0 = url1
 
-	if url==None:
+	if url is None:
 		url = url0 # if not found - return most relevant
 	
 	print 'URL:', url
@@ -88,7 +88,7 @@ def do_search(path):
 def search_google(q):
 	query = urllib.urlencode({'q' : q.decode('cp1251').encode('utf-8')})
 	g_url = u'http://ajax.googleapis.com/ajax/services/search/web?v=1.0&rsz=8&%s'.encode("utf-8") \
-		% (query)
+		% (query,)
 		
 	search_results = urllib.urlopen(g_url)
 	json = simplejson.loads(search_results.read())
@@ -103,7 +103,7 @@ def search_google(q):
 		print '\n>> Checking site:', site
 		
 		url = search_for_site(results, site)
-		if url != None:
+		if url is not None:
 			break
 		
 	if len(results) > 0:
@@ -143,7 +143,7 @@ def clean(q):
 def clean_russian(q):
 	m = re.match(r'.+(\[.+?\]).+',q)
 	
-	if m != None:
+	if m is not None:
 		return q[:m.start(1)] + ' '+q[m.end(1):]
 	
 	return None	
@@ -151,7 +151,7 @@ def clean_russian(q):
 def clean_eng(q):
 	m = re.match(r'.+(\[.+?\]).+',q)
 	
-	if m != None:
+	if m is not None:
 		return q[m.start(1):]
 	
 	return None	
