@@ -37,7 +37,8 @@ def main(args):
     webbrowser.open(url, new=NEW_BROWSER_WINDOW)
     #webbrowser.open_new_tab(url)
 
-    #input()
+    if DEBUG:
+        input()
 
 
 def do_search(path):
