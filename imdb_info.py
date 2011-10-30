@@ -1,3 +1,5 @@
+# coding: utf-8
+
 __author__ = 'xonixx@gmail.com'
 
 import sys
@@ -22,10 +24,12 @@ def fail(s):
     print s
     sys.exit(1)
 
+
 def p(s):
     print
     print s
     print
+
 
 def main(args):
     #print args
@@ -39,7 +43,7 @@ def main(args):
     url = do_search(path)
 
     if url is None:
-#        url='data:text/html,Film not found =(';
+    #        url='data:text/html,Film not found =(';
         pass
     else:
         webbrowser.open(url, new=NEW_BROWSER_WINDOW)
@@ -56,11 +60,18 @@ def do_search(path):
         ('by film folder name', make_search_string(path, False)),
     ]
 
+    for name in NOT_SEARCH_FOLDERS:
+        for k,v in to_try_search:
+            if name.lower() == v.lower():
+                to_try_search.remove((k,v))
+
+    print 'to_try_search:', to_try_search
+
     url, url0 = None, None
 
     for search_name, search_str in to_try_search:
         p('Searching ' + search_name + " : \n"
-         'q=' + search_str)
+                                       'q=' + search_str)
 
         url, url0 = search_google(search_str)
 
@@ -95,11 +106,14 @@ def do_search(path):
 #                url0 = url1
 
     if url is None:
-        url = url0 # if not found - return most relevant
+    #        url = url0 # if not found - return most relevant
+        print 'Opening Google Search...'
+        url = 'http://google.ru/search?q=%s' % ('site:%s %s' % (SITES[0], to_try_search[0][1]),)
 
     p('Result URL: %s' % url)
 
     return url
+
 
 def search_google(q):
     url, url0 = None, None
@@ -114,17 +128,22 @@ def search_google(q):
 
     return url, url0
 
+
+def cp1251_to_utf8(s):
+    return s.decode('cp1251').encode('utf-8')
+
+
 def query_google(q):
     p('Querying Google: q=' + q)
 
-    query = urllib.urlencode({'q': q.decode('cp1251').encode('utf-8')})
+    query = urllib.urlencode({'q': cp1251_to_utf8(q)})
     g_url = u'http://ajax.googleapis.com/ajax/services/search/web?v=1.0&rsz=8&%s'.encode("utf-8")\
     % (query,)
 
     search_results = urllib.urlopen(g_url)
     google_reply = search_results.read()
 
-#    p('Google reply: \n' + google_reply)
+    #    p('Google reply: \n' + google_reply)
 
     json = simplejson.loads(google_reply)
     results = json['responseData']['results']
@@ -186,7 +205,7 @@ def clean(q):
     q = re.sub('(?i)' + trash_re, '', q)
     q = re.sub('(?i)' + trash_re1, '', q)
 
-    return q.strip()
+    return q.strip().strip(' .,')
 
 
 def clean_russian(q):
