@@ -202,8 +202,14 @@ def clean(q):
     trash_re = '|'.join(r'\[%s\]' % t for t in TRASH)
     trash_re1 = '|'.join(r'\b%s\b' % t for t in TRASH)
 
-    q = re.sub('(?i)' + trash_re, '', q)
-    q = re.sub('(?i)' + trash_re1, '', q)
+    trash_re = '|'.join([trash_re, trash_re1])
+
+#    q = re.sub('(?i)' + trash_re, '', q)
+#    q = re.sub('(?i)' + trash_re1, '', q)
+    q = re.split('(?i)' + trash_re, q, 1)[0]
+    q = re.sub(r'[,.\(\)\[\]\s]+',' ',q)
+
+#    raw_input(q)
 
     return q.strip().strip(' .,')
 
